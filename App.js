@@ -1,16 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, Image, View } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import coinHandler from './models/coinHandler';
 
-const coinIcon =  require('./assets/dollar.png');
+const coinIcon =  require('./assets/290-coin-flat.gif');
 
 
 export default function App() {
   const [coins, setCoins] = useState([])
   const [markers, setMarkers] = useState(null);
+  const count = useRef(0);
 
   useEffect(() => {
     (async () => {
@@ -39,12 +40,17 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.container_map}>
-        <MapView style={styles.map} showsUserLocation={true} showsCompass={true} showsBuildings={true}>
+        <MapView style={styles.map} followsUserLocation={true} showsUserLocation={true} showsCompass={true} showsBuildings={true}>
           {markers}
         </MapView>
 
       </View>
       <View style={styles.underBar}>
+        <View style={styles.mapTrackerClick}>
+          <Text>
+            Click
+          </Text>
+        </View>
           <Text>UnderBar</Text>
       </View>
     </SafeAreaView>
@@ -65,6 +71,11 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
     height: "100%",
+  },
+  mapTrackerClick: {
+    position: "absolute",
+    top: -50,
+    right: 10,
   },
   underBar: {
     height: 180,
