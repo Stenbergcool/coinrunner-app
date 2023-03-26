@@ -3,6 +3,7 @@ import { StyleSheet, Text, Image, View } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Location from 'expo-location';
 import coinHandler from './models/coinHandler';
 
 const coinIcon =  require('./assets/290-coin-flat.gif');
@@ -14,7 +15,18 @@ export default function App() {
   const [coins, setCoins] = useState([])
   const [markers, setMarkers] = useState(null);
   const [followUser, setFollowUser] = useState(true);
-  const count = useRef(0);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        return;
+      }
+      const currentLocation = await Location.getCurrentPositionAsync({});
+      let userLocation = await Location.reverseGeocodeAsync({ latitude: currentLocation.coords.latitude, longitude: currentLocation.coords.longitude });
+      console.log(currentLocation)
+    })();
+  }, []);
 
   useEffect(() => {
     (async () => {
