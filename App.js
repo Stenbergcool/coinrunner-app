@@ -10,6 +10,23 @@ const coinIcon =  require('./assets/290-coin-flat.gif');
 const userIcon =  require('./assets/user.png');
 const settingIcon =  require('./assets/settings.png');
 
+function haversine_distance(coords1, coords2) {
+
+  function toRad(x) {
+      return x * Math.PI / 180;
+ }
+
+  let dLat = toRad(coords2.latitude - coords1.latitude);
+  let dLon = toRad(coords2.longitude - coords1.longitude)
+
+  let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(coords1.latitude)) *
+        Math.cos(toRad(coords2.latitude)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+  return (12742 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))) * 1000;
+}
+
 
 export default function App() {
   const [coins, setCoins] = useState([])
@@ -24,9 +41,22 @@ export default function App() {
       }
       const currentLocation = await Location.getCurrentPositionAsync({});
       let userLocation = await Location.reverseGeocodeAsync({ latitude: currentLocation.coords.latitude, longitude: currentLocation.coords.longitude });
-      console.log(currentLocation)
+
     })();
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval( async () => {
+      const currentLocation = await Location.getCurrentPositionAsync({});
+      console.log(currentLocation)
+      let userCoords = {latitude: currentLocation.coords.latitude, longitude: currentLocation.coords.longitude}
+      console.log(userCoords)
+      coins.forEach(e => {
+        console.log(haversine_distance(userCoords, {latitude: e.latitude, longitude: e.longitude}))
+      })
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [coins]);
 
   useEffect(() => {
     (async () => {
